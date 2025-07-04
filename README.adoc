@@ -1,0 +1,49 @@
+# CMake dependency management
+This article is about using Conan as dependency management
+
+:toc:
+:sectnums:
+
+== Introduction
+Conan is a dependency and package manager for both C and C++ languages. It is free and open-source, works in all platforms such as:
+=====
+* Linux 
+* MacOS 
+* Windows
+* FreeBSD
+* Solaris
+* etc...
+=====
+Conan can be used to develop for all targets including the embeded ones, such as mobile (iOS, Android), and bare metal. It also integrates with all build systems like:
+=====
+* CMake
+* Visual Studio (MSBuild)
+* Makefiles
+* SCon
+* etc...
+=====
+The list above also include the proprietary systems.
+
+== Install Conan
+Conan can be installed on many operating systems. It has been extensively used and tested on _Windows_, _Linux_ (Several distributions), _macOS_, and is also actively used in _FreeBSD_ and _Solaris_, _SunOS_.
+
+There are also several additional operating systems on which it has been reported to work.
+
+There are several ways to install Conan:
+
+=== Install conan using python
+The preferred and strongly recommended way to install _Conan_ is from PyPi, the Python Package Index using the `pip` command.
+
+To install latest Conan 2 version using the `pip`, you need at least a Python >= 3.6 distribution installed on your machine. Modern python distributions come with pip pre-installed. However, you can install it directly on your system.
+
+==== Install Conan
+Using the Python Package Index command, you can install conan using the following command:
+```bash
+$ pip install conan
+```
+NOTE: Make sure that your pip installation matches your Python and the version is >= 3.6
+
+NOTE: On Linux, you may need sudo permissions to install Conan globally
+
+NOTE: We strongly recommend using virtualenvs (virtualenvwrapper works great) for everything related to Python.
+
