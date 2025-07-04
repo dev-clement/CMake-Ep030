@@ -1,0 +1,218 @@
+= CMake for your daily C++ workflow
+The idea related to CMake is that it will be used for cross-compiling the application using several build tools on the specified distribution.
+
+:toc:
+:sectnums:
+
+IMPORTANT: When you want to make use of Windows to build systems for Linux, of course, as CMake is a tool letting you choose the compiler for the distribution you are choosing, but you can also, if you want make use of the _W_ indows _S_ ubsystem for _L_ inux
+
+Before diving deeper into CMake, you should install the following packages if you are a Windows user, the packages are as follows:
+
+. WSL
+. Python
+. Python3
+. gcc, g++, gdb
+. lcov, gcovr
+. ccache
+. make, cmake
+. cppcheck
+. llvm, clang-format, clang-tidy
+. curl, zip, unzip, tar
+. graphviz
+
+All these packages listed above aren't mandatory, although it can be a plus, unless `gcc`, `g++` and `gdb` as well as `make` and `cmake` that are kind of mandatory.
+
+== HelloWorld example
+Let's go back to the basic, let's create a file named `main.cpp` that will contains a simple `main` function which will print to the output standard a simple _Hello World_ like so:
+
+```cpp
+#include <iostream>
+
+int main() {
+    std::cout << "Hello World" << std::endl;
+    return EXIT_SUCCESS;
+}
+```
+From this file named `main.cpp`, we'll make use of CMake in order to create the binary with that _main_ function, using CMake we'll also be able to link it against some libraries, or even use other files.
+
+CMake being an abstraction, we'll need just need to create the given file named `CMakeLists.txt`. That file will contain a set of instruction that the `cmake` cli command will understand and process.
+
+=== CMakeLists.txt content
+Let's create this `CMakeLists.txt` step by step, and the name of the file HAS to be like this: `CMakeLists.txt`. First and foremost, the file has to contain the minimum version required by your CMakeLists like so:
+
+==== cmake_minimum_required
+
+```cmake
+cmake_minimum_required(VERSION <cmake_version>)
+```
+Above, you'll just need to replace the `<cmake_version>` by the cmake version your CMakeLists is targetting. In order of you take have the version of your cmake, you'll just have to type the followings: `cmake --version`.
+
+==== project
+
+This command is made in order to name the project your `CMakeLists.txt` file is building and sets the name of the project, and stores it in the variable `PROJECT_NAME`. When called from the top-level `CMakeLists.txt` also stores the project name in the variable `CMAKE_PROJECT_NAME`.
+
+But, this command can let you specify other things such as:
+
+* VERSION `<major>[.<minor>[.<patch>]]`
+* DESCRIPTION `<project-description-string>`
+* HOMEPAGE_URL `<url-string>`
+* LANGUAGES `<languages-name>...`
+
+So for example, here is what there is in the CMakeLists file:
+```cmake
+cmake_minimum_required(VERSION 3.28)
+
+project(CppProjectTemplate
+        VERSION 0.0.1
+        LANGUAGES C CXX)
+
+```
+
+NOTE: Appart from the name and the VERSION, `LANGUAGES` is having a value that is both `C CXX`, so that means the languages of this project is C and C++, notice that the "+" here is changed by an "X".
+
+==== add_executable
+
+Once you specified the project, you will be able to add executable of the application using the command `add_executable` that contains the following arguments:
+
+```cmake
+cmake_minimum_required(VERSION 3.28)
+
+project(CppProjectTemplate
+        VERSION 0.0.1
+        LANGUAGES C CXX)
+
+add_executable(executable ./main.cpp)
+```
+The `add_executable` is a command that contains 2 parameter here being the name of the executable (not the same name as the project, although that can be if we use `${PROJECT_NAME}`) and the second parameter is the name of the source file.
+
+=== Build a CMake project
+Once you finish to make the `CMakeLists.txt`, you'll then be able to generate a build using the following command:
+
+```shell
+$ cmake -S . -B build
+```
+In the above example, we'll run the `cmake` binary from where the source file is and where the `CMakeLists.txt` is located at.
+
+NOTE: If you run the command above, you'll generate the build of your project, however, as no build system has been taken, CMake will use the one by default.
+
+If you want to specify the build system, you'll have to specify the `-G` command like the following:
+
+```shell
+$ cmake -S . -B build -G <your_generator>
+```
+
+WARNING: Be carefull of the generator you are choosing, indeed, if the name of your generator have a space, you should add quotes in order for CMake to not process the space as a separator.
+
+Once you finished to build your project, you can go to the `build` folder where you'll be able to create the executable using the build tool you choose inside of the `cmake` CLI.
+
+NOTE: If you don't want to do the paragraph written above, you can also use cmake to build your solution using the following command:
+
+```shell
+$ cmake --build <dir>
+```
+
+==== cmake --build
+
+This command will build a CMake-generated binary tree. This abstracts a native build tool's command-line interface with the following options:
+
+* `<dir>` The project binary directory to be built
+* `--target <tgt>` Build the given target `tgt` instead of the default target
+* `--config <cfg>` For multi-configuration tools, choose <cfg>
+* `--clean-first` Build target `clean` first, then build. To clean only, use the `--target clean`
+* `--use-stderr` Ignored. Behavior is default in CMake 3.0
+
+=== Execute the binary
+The given binary is created by the generator you choose in your operating-system, normally it's close to the build folder, and you'll be able to run it like any other command.
+
+== CMake command Line interface
+```sh
+# Generate project build system
+$ cmake [<options>...] -B <path-to-build> [-S <path-to-source>]
+$ cmake [<options>...] <path-to-source> | <path-to-exesting-build>
+
+# Build a project
+$ cmake --build <dir> [<options>...] [-- <build-tool-options>]
+
+# Install a project
+$ cmake --install <dir> [<options>...]
+
+# Open a project
+$ cmake --open <dir>
+
+# Run a Script
+$ cmake  [-D <var>=<value>]... -P <cmake-script-file>
+
+# Run a command-line tool
+$ cmake -E <command> [<options>]
+
+# Run the find-package tool
+$ cmake --find-package [<options>]
+
+# Run a workflow preset
+$ cmake --workflow <options>
+
+# View help
+$ cmake --help
+```
+The CMake executable is the command-line interface (CLI) of the cross-platform buildsystem generator named CMake. The above synopsis lists of various actions the tool can perform as described in sections below.
+
+In order to build a software with CMake or link:https://cmake.org/cmake/help/latest/manual/cmake.1.html#generate-a-project-buildsystem[Generate a Build system]. Optionnally use cmake to build a project, install a project or just run the corresponding build tool (e.g `make`) directly. *cmake* can also be used to link:https://cmake.org/cmake/help/latest/manual/cmake.1.html#view-help[view help]
+
+=== CMake important command and arguments
+The `cmake` commands have a lot of options as well as arguments but some of them are more important than the others:
+
+==== Generating a project
+In order to generate a project using the `cmake` command line interface you can do:
+
+```sh
+$ mkdir build
+$ cd build
+```
+
+Once you reach this `build` directory you can build your application using both commands:
+
+===== First option
+```sh
+$ cmake -S .. -B . #you specify the build folder being "build"
+```
+===== Second option
+```sh
+$ cmake ..
+```
+The commands above let you generate your build, however you didn't make any build using these commands, you will be able to compile your build using the followings commands:
+
+===== Compile using cmake
+You can either use cmake to compile and generate what your cmake generate, or use the build system directly. Using cmake is looking like this:
+```sh
+cmake --build <path-where-you-make-the-build>
+```
+
+===== Compile using the generator you choose
+You can also compile your application using the generator you chose itself, let say you want to compile your application in Linux and use `Unix Makefiles`:
+```cmake
+$ cmake -S <build-folder> -G "Unix Makefile" # You build your application
+$ cd <build-folder> && make clean && make
+```
+
+== CMake generators
+
+IMPORTANT: Something to note, is that CMake isn't a build generator. Actually what CMake is doing is generate a build system for the generator you choose, depending on the platform you are lying on.
+
+NOTE: All that being said, the idea of using CMake is that we shouldn't care about what kind of generator CMake is using, we just need to build our project on a specific platform in order to get either the executable or the library we want to compile.
+
+A cmake generator is responsible for writing the input files for a native fuild system. Exactly one of the link:https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#cmake-generators[CMake Generators] must be selected for a build tree to determine what native build system is to be used. Optionnaly one of the link:https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#extra-generators[Extra generators] may be selected as a variant of some of the link:https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#command-line-build-tool-generators[Command-Line Build Tool Generators] to produce project files for an auxiliary IDE.
+
+=== Generators platform-related
+CMake generators are platform-specific so each may be available only on certain platforms. The link:https://cmake.org/cmake/help/latest/manual/cmake.1.html#manual:cmake(1)[cmake] command line tool link:https://cmake.org/cmake/help/latest/manual/cmake.1.html#cmdoption-cmake-h[--help] output lists available generators on the current platform. Use its link:https://cmake.org/cmake/help/latest/manual/cmake.1.html#cmdoption-cmake-G[-G] option to specify the generator for a new build tree.
+
+==== Specify a generator
+Once you make your build using cmake, along with the command of `cmake -S <path-to-source> -B <path-to-build>`, you need to specify the generator, if not, **the default generator of the platform will be used**.
+
+For example, here is a specific command that will make a build for a Unix Makefiles solution:
+```sh
+$ cmake -S <path-to-source> -B <path-to-build> -G "Unix Makefiles"
+```
+After that, you'll be able to either:
+
+- Going to the <path-to-build> folder and then run the Makefile using `make` or `make <target>`
+- Using cmake to make the target using `cmake --build <path-to-build> --target <target>` this command will use the target in the build system and try to run it.
